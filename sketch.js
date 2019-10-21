@@ -33,11 +33,6 @@ function draw() {
   arc(origin.x, origin.y, 4 * long_length, 4 * long_length, PI + HALF_PI, 2 * PI);
   line(origin.x, origin.y, origin.x, origin.y - 2 * long_length);
 
-  // if (dist(mouseX, mouseY, origin.x, origin.y) <= 2 * long_length &&
-  //   (mouseX > width - 2 * long_length && mouseX < width && mouseY > 0 && mouseY < height)) {
-  //   target = createVector(mouseX, mouseY);
-  // }
-
   diff = p5.Vector.sub(target, origin);
 
   q2 = Math.acos((diff.x * diff.x + diff.y * diff.y - 2 * long_length * long_length) /
