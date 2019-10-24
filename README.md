@@ -1,0 +1,5 @@
+# robotic-arm-control
+
+My current electrical engineering-focused project is to build a robotic arm that can play chess against you. The 2-link robotic arm will be controlled by an ATmega328P -- I'll be using the Micro-Max Chess AI by Harm Geert Muller as my chess engine (https://www.chessprogramming.org/Micro-Max), but I'll be designing the control software myself. Control of a three dimensional robotic arm turns out to be a harder problem than expected, so to get a head start on the software before the arm itself is finished, I put together this 3D simulation of a robotic arm that I can use to fine-tune my control software before porting it over to Arduino. The simulation uses p5.js for visualization and runs in your browser.
+
+Currently, the software can determine joint angles for a robotic arm operating in a plane. In order to extend that solution to 3D, I solve the problem in 2D, then use matrix algebra to rotate the 2D solution around the z axis into the correct location in 3D. The framework for this solution exists, so future commits will be troubleshooting existing code and improving the visualization.
