@@ -1,12 +1,12 @@
-let q0 = 0; // angle about the z axis, relative to positive x
-let q1 = 45; // between horizontal plane of base and first arm segment
-let q2 = 90; // between first arm segment and second arm segment
+let q0 = 0; // Angle about the y axis, relative to positive x
+let q1 = 45; // Angle between horizontal plane of base and first arm segment
+let q2 = 90; // Angle between first arm segment and second arm segment
 
-let target;
-let origin;
-let p1; // top of base
-let p2; // elbow
-let p3; // top of claw
+let origin; // Origin of arm
+let target; // Target point of arm
+let p1; // Top of base
+let p2; // Elbow
+let p3; // Top of claw
 let p4; // base of claw
 
 const long_length = 200;
@@ -15,7 +15,7 @@ const short_length = 50;
 const width = 4.1 * long_length;
 const height = 2.5 * long_length;
 
-const speed = 3;
+const speed = 3; // Movement speed
 
 let camera_angle = 1;
 let camera_height = -250;
@@ -23,8 +23,8 @@ let camera_dist = 2 * long_length;
 
 function setup() {
   createCanvas(width, height, WEBGL);
-  target = createVector(long_length / 2, long_length / -2, 0);
   origin = createVector(0, 0, 0);
+  target = createVector(long_length / 2, long_length / -2, 0);
 }
 
 function draw() {
@@ -34,10 +34,10 @@ function draw() {
 
   camera(camera_dist * cos(camera_angle), camera_height, camera_dist * sin(camera_angle), 0, long_length / -2, 0, 0, 1, 0);
 
-  //top view
-  //camera(0, camera_height, 0, 0, long_length / -2, 0, 0, 0, 1);
+  // Uncomment for top view.
+  // camera(0, camera_height, 0, 0, long_length / -2, 0, 0, 0, 1);
 
-  // draw the xz-plane
+  // Draw the xz-plane.
   push()
   rotateX(HALF_PI);
   fill(100);
@@ -46,11 +46,11 @@ function draw() {
   plane(width, width);
   pop()
 
+  // Draw a box at the origin to represent arm base.
+  push();
   fill(100);
   stroke(255);
   strokeWeight(2);
-
-  push();
   translate(0, -short_length / 2, 0);
   box(short_length);
   pop();
@@ -60,13 +60,13 @@ function draw() {
   q0 = -atan2(diff.z, diff.x);
   diff = rotateVectorY(diff, -q0);
 
-  // Calculate angles using IK
+  // Calculate angles using IK.
   q2 = acos((diff.x * diff.x + diff.y * diff.y - 2 * long_length * long_length) /
     (2 * long_length * long_length));
   q1 = (atan(diff.y / diff.x) -
     atan((long_length * sin(q2)) / (long_length + long_length * cos(q2))));
 
-  // Calculate joint locations
+  // Calculate joint locations.
   p1 = p5.Vector.add(origin, createVector(0, -short_length, 0)); // works
   p2 = p5.Vector.add(p1, createVector(
     cos(q1) * long_length,
@@ -80,12 +80,12 @@ function draw() {
   ));
   p4 = p5.Vector.add(p3, createVector(0, short_length, 0));
 
-  // Rotate joints back to 3D case
+  // Rotate joints back to 3D case.
   p2 = rotateVectorY(p2, q0);
   p3 = rotateVectorY(p3, q0);
   p4 = rotateVectorY(p4, q0);
 
-  // Draw lines
+  // Draw lines for arm segments.
   stroke(255);
   strokeWeight(8);
 
@@ -94,52 +94,35 @@ function draw() {
   line(p2.x, p2.y, p2.z, p3.x, p3.y, p3.z);
   line(p3.x, p3.y, p3.z, p4.x, p4.y, p4.z);
 
-  // Draw shadow
+  // Draw shadow.
   stroke(100);
   strokeWeight(5);
   line(origin.x, 0, origin.z, target.x, 0, target.z);
 
-  if (keyIsDown(LEFT_ARROW)) {
-    if (checkMotion(0, -speed)) target.x -= speed;
-  }
-  if (keyIsDown(RIGHT_ARROW)) {
-    if (checkMotion(0, speed)) target.x += speed;
-  }
-  if (keyIsDown(UP_ARROW)) {
-    if (checkMotion(1, -speed)) target.y -= speed;
-  }
-  if (keyIsDown(DOWN_ARROW)) {
-    if (checkMotion(1, speed)) target.y += speed;
-  }
-  if (keyIsDown(188)) {
-    if (checkMotion(2, -speed)) target.z -= speed;
-  }
-  if (keyIsDown(190)) {
-    if (checkMotion(2, speed)) target.z += speed;
-  }
+  // Check keypresses to move target and camera
+  if (keyIsDown(LEFT_ARROW) && checkMotion(0, -speed)) target.x -= speed;
+  if (keyIsDown(RIGHT_ARROW) && checkMotion(0, speed)) target.x += speed;
+  if (keyIsDown(UP_ARROW) && checkMotion(1, -speed)) target.y -= speed;
+  if (keyIsDown(DOWN_ARROW) && checkMotion(1, speed)) target.y += speed;
+  if (keyIsDown(188) && checkMotion(2, -speed)) target.z -= speed; // <
+  if (keyIsDown(190) && checkMotion(2, speed)) target.z += speed; // >
 
-  if (keyIsDown(65)) { // a
-    camera_angle += 0.05;
-  }
-  if (keyIsDown(68)) { // d
-    camera_angle -= 0.05;
-  }
-  if (keyIsDown(87)) { // w
-    camera_height -= 2;
-  }
-  if (keyIsDown(83)) { // s
-    camera_height += 2;
-  }
-  if (keyIsDown(82)) { // w
-    camera_dist += 2;
-  }
-  if (keyIsDown(70)) { // s
-    camera_dist -= 2;
-  }
+  if (keyIsDown(65)) camera_angle += 0.05; // a
+  if (keyIsDown(68)) camera_angle -= 0.05; // d
+  if (keyIsDown(87)) camera_height -= 2; // w
+  if (keyIsDown(83)) camera_height += 2; // s
+  if (keyIsDown(82)) camera_dist -= 2; // r
+  if (keyIsDown(70)) camera_dist += 2; // f
 
 }
 
-// Works perfectly
+/**
+ * Rotates a vector around the Y axis.
+ *
+ * @param vector vector to rotate
+ * @param theta angle through which to rotate
+ * @return the rotated vector
+ */
 function rotateVectorY(vector, theta) {
   m = [
     [cos(theta), 0, sin(theta)],
@@ -154,6 +137,13 @@ function rotateVectorY(vector, theta) {
   return createVector(productx, producty, productz);
 }
 
+/**
+ * Checks if motion of the arm is possible.
+ *
+ * @param axis the axis of movement (0:x, 1:y, 2:z)
+ * @param m the magnitude of movement
+ * @return boolean, true if movement is possible
+ */
 function checkMotion(axis, m) {
   check = target.copy();
 
@@ -163,5 +153,5 @@ function checkMotion(axis, m) {
 
   d = dist(check.x, check.y, check.z, origin.x, origin.y, origin.z);
   r = dist(check.x, check.z, origin.x, origin.z);
-  return d < 2 * long_length - speed && check.y < 0 && r > long_length / 4;
+  return d < 2 * long_length - m && check.y < 0 && r > long_length / 4;
 }
